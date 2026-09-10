@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++学习</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, sans-serif;}
+        /* 登录页样式 */
+        .login-wrap{
+            width:100vw;height:100vh;
+            background:linear-gradient(135deg,#16222a,#3a6073);
+            display:flex;align-items:center;justify-content:center;
+        }
+        .login-box{
+            background:#fff;padding:40px 32px;border-radius:12px;
+            width:min(90%,420px);box-shadow:0 8px 30px #0004;
+        }
+        .login-box h1{text-align:center;color:#222;margin-bottom:30px;font-size:28px;}
+        .login-box .item{margin-bottom:18px;}
+        .login-box label{display:block;margin-bottom:6px;color:#444;}
+        .login-box input{
+            width:100%;padding:12px 14px;border:1px solid #ccc;border-radius:6px;font-size:16px;
+        }
+        .login-box button{
+            width:100%;padding:13px;background:#2563eb;color:white;border:none;border-radius:6px;font-size:17px;cursor:pointer;
+        }
+        .err{color:red;margin-top:12px;text-align:center;display:none;}
+
+        /* 课程主页，默认隐藏 */
+        .course-page{display:none;height:100vh;overflow:hidden;}
+        .container{display:grid;grid-template-columns:260px 1fr;height:100%;}
+        .sidebar{background:#1e293b;color:white;padding:20px;overflow-y:auto;}
+        .sidebar h3{margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #475569;}
+        .chapter{margin-bottom:14px;}
+        .chapter-title{padding:8px 6px;cursor:pointer;font-weight:bold;color:#cbd5e1;}
+        .sub-lesson{padding:7px 14px;cursor:pointer;color:#94a3b8;font-size:14px;}
+        .sub-lesson:hover{background:#334155;color:#fff;}
+        .main-content{padding:24px;overflow-y:auto;background:#f8fafc;}
+        .main-content h2{margin-bottom:16px;color:#1e293b;}
+        .main-content p{line-height:1.7;margin-bottom:14px;color:#334155;font-size:16px;}
+        .code-block{
+            background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;
+            margin:16px 0;position:relative;white-space:pre-wrap;font-family:Consolas,monospace;
+        }
+        .copy-btn{
+            position:absolute;top:8px;right:8px;padding:4px 10px;background:#3b82f6;color:#fff;border:none;border-radius:4px;cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div class="login-wrap" id="loginPage">
+        <div class="login-box">
+            <h1>C++学习</h1>
+            <div class="item">
+                <label>用户名</label>
+                <input id="username" type="text" placeholder="输入用户名">
+            </div>
+            <div class="item">
+                <label>密码</label>
+                <input id="pwd" type="password" placeholder="输入密码">
+            </div>
+            <button onclick="loginCheck()">登录进入课程</button>
+            <div class="err" id="errorTip">用户名或密码错误！</div>
+        </div>
+    </div>
+
+    <!-- 课程主页面 -->
+    <div class="course-page" id="coursePage">
+        <div class="container">
+            <!-- 左侧导航 -->
+            <div class="sidebar">
+                <h3>C++完整课程目录</h3>
+                <div class="chapter">
+                    <div class="chapter-title">第1章 C++入门准备</div>
+                    <div class="sub-lesson" onclick="showLesson(1)">1.1 安装Dev-C++编译器</div>
+                    <div class="sub-lesson" onclick="showLesson(2)">1.2 HelloWorld第一个程序</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第2章 基础语法与变量</div>
+                    <div class="sub-lesson" onclick="showLesson(3)">2.1 变量与数据类型</div>
+                    <div class="sub-lesson" onclick="showLesson(4)">2.2 cin输入与cout输出</div>
+                    <div class="sub-lesson" onclick="showLesson(5)">2.3 运算符（算术/关系/逻辑）</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第3章 流程控制</div>
+                    <div class="sub-lesson" onclick="showLesson(6)">3.1 if 判断分支</div>
+                    <div class="sub-lesson" onclick="showLesson(7)">3.2 for / while循环</div>
+                    <div class="sub-lesson" onclick="showLesson(8)">3.3 switch多分支语句</div>
+                    <div class="sub-lesson" onclick="showLesson(9)">3.4 break与continue</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第4章 函数基础</div>
+                    <div class="sub-lesson" onclick="showLesson(10)">4.1 自定义函数基础</div>
+                    <div class="sub-lesson" onclick="showLesson(11)">4.2 函数形参与实参</div>
+                    <div class="sub-lesson" onclick="showLesson(12)">4.3 函数重载</div>
+                    <div class="sub-lesson" onclick="showLesson(13)">4.4 递归函数</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第5章 数组与字符串</div>
+                    <div class="sub-lesson" onclick="showLesson(14)">5.1 一维数组</div>
+                    <div class="sub-lesson" onclick="showLesson(15)">5.2 二维数组</div>
+                    <div class="sub-lesson" onclick="showLesson(16)">5.3 C风格char字符串</div>
+                    <div class="sub-lesson" onclick="showLesson(17)">5.4 C++ string字符串类</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第6章 结构体、引用与指针</div>
+                    <div class="sub-lesson" onclick="showLesson(18)">6.1 结构体struct</div>
+                    <div class="sub-lesson" onclick="showLesson(19)">6.2 引用 &</div>
+                    <div class="sub-lesson" onclick="showLesson(20)">6.3 指针基础</div>
+                    <div class="sub-lesson" onclick="showLesson(21)">6.4 指针与数组</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第7章 面向对象OOP</div>
+                    <div class="sub-lesson" onclick="showLesson(22)">7.1 类与对象基础</div>
+                    <div class="sub-lesson" onclick="showLesson(23)">7.2 构造函数与析构函数</div>
+                    <div class="sub-lesson" onclick="showLesson(24)">7.3 访问权限 public private</div>
+                    <div class="sub-lesson" onclick="showLesson(25)">7.4 继承</div>
+                    <div class="sub-lesson" onclick="showLesson(26)">7.5 多态与虚函数virtual</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第8章 内存管理</div>
+                    <div class="sub-lesson" onclick="showLesson(27)">8.1 new与delete动态内存</div>
+                    <div class="sub-lesson" onclick="showLesson(28)">8.2 内存泄漏问题</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第9章 文件读写</div>
+                    <div class="sub-lesson" onclick="showLesson(29)">9.1 文本文件读写 fstream</div>
+                    <div class="sub-lesson" onclick="showLesson(30)">9.2 二进制文件读写</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第10章 C++模板与异常</div>
+                    <div class="sub-lesson" onclick="showLesson(31)">10.1 函数模板 template</div>
+                    <div class="sub-lesson" onclick="showLesson(32)">10.2 类模板</div>
+                    <div class="sub-lesson" onclick="showLesson(33)">10.3 try-catch异常捕获</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第11章 STL标准库（重点高阶）</div>
+                    <div class="sub-lesson" onclick="showLesson(34)">11.1 STL简介与迭代器</div>
+                    <div class="sub-lesson" onclick="showLesson(35)">11.2 vector动态数组</div>
+                    <div class="sub-lesson" onclick="showLesson(36)">11.3 string进阶</div>
+                    <div class="sub-lesson" onclick="showLesson(37)">11.4 deque双端队列</div>
+                    <div class="sub-lesson" onclick="showLesson(38)">11.5 set集合容器</div>
+                    <div class="sub-lesson" onclick="showLesson(39)">11.6 map键值对映射</div>
+                    <div class="sub-lesson" onclick="showLesson(40)">11.7 STL常用算法 sort/find</div>
+                </div>
+                <div class="chapter">
+                    <div class="chapter-title">第12章 高阶拓展</div>
+                    <div class="sub-lesson" onclick="showLesson(41)">12.1 命名空间namespace</div>
+                    <div class="sub-lesson" onclick="showLesson(42)">12.2 const常量与const指针</div>
+                    <div class="sub-lesson" onclick="showLesson(43)">12.3 函数默认参数</div>
+                </div>
+            </div>
+            <!-- 课程内容区域 -->
+            <div class="main-content" id="contentBox">
+                <h2>欢迎学习C++课程</h2>
+                <p>请点击左侧目录，选择课程开始学习。从零基础入门，一直学到STL、面向对象高阶。</p>
+            </div>
+        </div>
+    </div>
+
+<script>
+// 登录账号
+const USER = "student01";
+const PASSWORD = "CppStudy123";
+
+function loginCheck(){
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("pwd").value;
+    if(u === USER && p === PASSWORD){
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("coursePage").style.display = "block";
+    }else{
+        document.getElementById("errorTip").style.display = "block";
+    }
+}
+
+// 复制代码函数
+function copyCode(elemId){
+    let txt = document.getElementById(elemId).innerText;
+    navigator.clipboard.writeText(txt).then(()=>alert("代码复制成功！"));
+}
+
+// 课程内容
+function showLesson(id){
+    const box = document.getElementById("contentBox");
+    switch(id){
+        case 1:
+            box.innerHTML = `
+            <h2>1.1 安装Dev-C++编译器</h2>
+            <p>Dev-C++ 是简单好用的C/C++编辑器，适合零基础新手入门，免费开源。</p>
+            <p>官方下载地址：<a href="https://sourceforge.net/projects/orwelldevcpp/" target="_blank">https://sourceforge.net/projects/orwelldevcpp/</a></p>
+            <p>1. 打开上面链接，进入官网下载稳定版本（推荐5.11版本）</p>
+            <p>2. 下载后双击安装，一路下一步，默认设置即可。<b>注意安装路径不要带中文</b></p>
+            <p>3. 打开软件，新建源代码，后缀保存为 .cpp</p>
+            <p>4. 写完代码，点击【运行】按钮，编译并执行程序。</p>
+            `;
+            break;
+        case 2:
+            box.innerHTML = `
+            <h2>1.2 HelloWorld 你的第一个C++程序</h2>
+            <p>这个程序功能：在控制台输出一行文字 Hello World!</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code2')">复制代码</button>
+<pre id="code2">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    cout << "Hello World!" << endl;
+    return 0;
+}</pre>
+            </div>
+            <p>代码讲解：</p>
+            <p>#include &lt;iostream&gt; 引入输入输出头文件，cout输出必须要它</p>
+            <p>using namespace std; 使用标准命名空间，简化代码书写</p>
+            <p>int main() 主函数，程序入口，所有C++程序从main开始运行</p>
+            <p>cout << ""; 代表控制台输出文字</p>
+            <p>return 0; 程序正常结束</p>
+            <p>运行结果控制台输出：Hello World!</p>
+            `;
+            break;
+        case 3:
+            box.innerHTML = `
+            <h2>2.1 变量与数据类型</h2>
+            <p>变量就是用来存数据的容器。C++常用基础类型：</p>
+            <p>int 整数，double小数，char字符，bool布尔(true/false)</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code3')">复制代码</button>
+<pre id="code3">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    int age = 18;
+    double score = 96.5;
+    char ch = 'A';
+    bool flag = true;
+    cout << age << endl;
+    cout << score << endl;
+    cout << ch << endl;
+    cout << flag << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 4:
+            box.innerHTML = `
+            <h2>2.2 cin输入 和 cout输出</h2>
+            <p>cout 输出内容到屏幕；cin 接收用户键盘输入。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code4')">复制代码</button>
+<pre id="code4">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    int num;
+    cout << "请输入一个数字：";
+    cin >> num;
+    cout << "你输入的数字是：" << num << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 5:
+            box.innerHTML = `
+            <h2>2.3 运算符（算术/关系/逻辑）</h2>
+            <p>算术：+ - * / % ；关系：> < >= <= == !=；逻辑：&& || !</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code5')">复制代码</button>
+<pre id="code5">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int a=10,b=3;
+    cout << "a+b=" << a+b << endl;
+    cout << "a>b? " << (a>b) << endl;
+    cout << "&&:" << (a>5 && b>1) << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 6:
+            box.innerHTML = `
+            <h2>3.1 if 判断分支语句</h2>
+            <p>满足条件就执行对应代码，用来做选择判断。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code6')">复制代码</button>
+<pre id="code6">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    int score;
+    cin >> score;
+    if(score >= 60){
+        cout << "及格" << endl;
+    }else{
+        cout << "不及格" << endl;
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 7:
+            box.innerHTML = `
+            <h2>3.2 for循环与while循环</h2>
+            <p>循环：重复执行一段代码，for适合知道循环多少次，while适合不确定次数。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code7')">复制代码</button>
+<pre id="code7">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    // for循环：输出1到10
+    for(int i=1;i<=10;i++){
+        cout << i << " ";
+    }
+    cout << endl;
+    // while循环
+    int j = 1;
+    while(j<=5){
+        cout << j << " ";
+        j++;
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 8:
+            box.innerHTML = `
+            <h2>3.3 switch多分支语句</h2>
+            <p>适合固定离散值的多情况判断，注意break防止穿透。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code8')">复制代码</button>
+<pre id="code8">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int day;
+    cin >> day;
+    switch(day){
+        case 1: cout<<"周一";break;
+        case 2: cout<<"周二";break;
+        default:cout<<"其他";
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 9:
+            box.innerHTML = `
+            <h2>3.4 break与continue</h2>
+            <p>break：直接跳出整个循环；continue：跳过本次循环，进入下一轮。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code9')">复制代码</button>
+<pre id="code9">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    for(int i=1;i<=10;i++){
+        if(i == 5) break;
+        cout << i << " ";
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 10:
+            box.innerHTML = `
+            <h2>4.1 自定义函数基础</h2>
+            <p>函数：把一段功能代码打包，重复调用。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code10')">复制代码</button>
+<pre id="code10">#include &lt;iostream&gt;
+using namespace std;
+
+//自定义求和函数
+int add(int a,int b){
+    return a + b;
+}
+
+int main(){
+    int res = add(3,5);
+    cout << res << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 11:
+            box.innerHTML = `
+            <h2>4.2 函数形参与实参</h2>
+            <p>形参：函数定义时括号里的变量；实参：调用函数传入真实数据，单向值传递。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code11')">复制代码</button>
+<pre id="code11">#include &lt;iostream&gt;
+using namespace std;
+void change(int x){
+    x = 100;
+}
+int main(){
+    int a = 10;
+    change(a);
+    cout << a; //a不会变化，值拷贝
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 12:
+            box.innerHTML = `
+            <h2>4.3 函数重载</h2>
+            <p>同名函数，参数数量/类型不同，编译器自动匹配调用。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code12')">复制代码</button>
+<pre id="code12">#include &lt;iostream&gt;
+using namespace std;
+void func(int a){cout<<"int版本";}
+void func(double a){cout<<"double版本";}
+int main(){
+    func(10);
+    func(3.14);
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 13:
+            box.innerHTML = `
+            <h2>4.4 递归函数</h2>
+            <p>函数自己调用自己，必须有终止条件，否则死循环栈溢出。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code13')">复制代码</button>
+<pre id="code13">#include &lt;iostream&gt;
+using namespace std;
+int f(int n){
+    if(n == 1) return 1;
+    return n * f(n-1);
+}
+int main(){
+    cout << f(5); //5的阶乘
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 14:
+            box.innerHTML = `
+            <h2>5.1 一维数组</h2>
+            <p>数组：存放一组同类型数据。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code14')">复制代码</button>
+<pre id="code14">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    int arr[5] = {10,20,30,40,50};
+    for(int i=0;i<5;i++){
+        cout << arr[i] << " ";
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 15:
+            box.innerHTML = `
+            <h2>5.2 二维数组</h2>
+            <p>可以理解成多行多列的表格。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code15')">复制代码</button>
+<pre id="code15">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int arr[2][3] = {{1,2,3},{4,5,6}};
+    for(int i=0;i<2;i++){
+        for(int j=0;j<3;j++){
+            cout << arr[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 16:
+            box.innerHTML = `
+            <h2>5.3 C风格char字符串</h2>
+            <p>字符数组，末尾自动带结束符'\\0'。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code16')">复制代码</button>
+<pre id="code16">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    char str[] = "hello";
+    cout << str << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 17:
+            box.innerHTML = `
+            <h2>5.4 C++ string字符串类</h2>
+            <p>string是C++封装好的字符串，支持拼接、查找、截取，比char数组好用。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code17')">复制代码</button>
+<pre id="code17">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+int main(){
+    string s1 = "Hello";
+    string s2 = " C++";
+    string s = s1 + s2;
+    cout << s;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 18:
+            box.innerHTML = `
+            <h2>6.1 结构体struct</h2>
+            <p>结构体可以把多种不同类型数据打包在一起，描述一个事物。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code18')">复制代码</button>
+<pre id="code18">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+struct Student{
+    string name;
+    int age;
+};
+int main(){
+    Student s;
+    s.name = "小明";
+    s.age = 16;
+    cout << s.name << " " << s.age;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 19:
+            box.innerHTML = `
+            <h2>6.2 引用 &</h2>
+            <p>引用就是变量别名，引用和原变量共用同一块内存，修改引用等于修改原变量。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code19')">复制代码</button>
+<pre id="code19">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int a = 10;
+    int &b = a;
+    b = 20;
+    cout << a; //输出20
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 20:
+            box.innerHTML = `
+            <h2>6.3 指针基础（C++核心难点）</h2>
+            <p>指针存储变量的内存地址，是C++强大的底层工具。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code20')">复制代码</button>
+<pre id="code20">#include &lt;iostream&gt;
+using namespace std;
+
+int main(){
+    int a = 100;
+    int *p = &a; //p保存a的地址
+    cout << "a的值：" << a << endl;
+    cout << "a的地址：" << &a << endl;
+    cout << "指针p指向的值：" << *p << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 21:
+            box.innerHTML = `
+            <h2>6.4 指针与数组</h2>
+            <p>数组名本质就是数组首元素的地址，可以用指针遍历数组。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code21')">复制代码</button>
+<pre id="code21">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int arr[] = {10,20,30};
+    int *p = arr;
+    cout << *p << endl;
+    cout << *(p+1) << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 22:
+            box.innerHTML = `
+            <h2>7.1 面向对象：类与对象基础</h2>
+            <p>C++是面向对象语言，类是模板，对象是实例。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code22')">复制代码</button>
+<pre id="code22">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+class Person{
+public:
+    string name;
+    void sayHello(){
+        cout << "你好！" << endl;
+    }
+};
+
+int main(){
+    Person p;
+    p.name = "小明";
+    p.sayHello();
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 23:
+            box.innerHTML = `
+            <h2>7.2 构造函数与析构函数</h2>
+            <p>构造函数：创建对象自动调用，初始化；析构函数：对象销毁自动调用，释放资源。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code23')">复制代码</button>
+<pre id="code23">#include &lt;iostream&gt;
+using namespace std;
+class Person{
+public:
+    Person(){cout<<"构造函数执行"<<endl;}
+    ~Person(){cout<<"析构函数执行"<<endl;}
+};
+int main(){
+    Person p;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 24:
+            box.innerHTML = `
+            <h2>7.3 访问权限 public private</h2>
+            <p>public：外部可以访问；private：仅类内部访问，外部无法直接读写。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code24')">复制代码</button>
+<pre id="code24">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+class Person{
+private:
+    int age;
+public:
+    void setAge(int a){age=a;}
+    int getAge(){return age;}
+};
+int main(){
+    Person p;
+    p.setAge(18);
+    cout << p.getAge();
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 25:
+            box.innerHTML = `
+            <h2>7.4 继承</h2>
+            <p>子类继承父类，复用父类代码，扩展新功能。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code25')">复制代码</button>
+<pre id="code25">#include &lt;iostream&gt;
+using namespace std;
+class Base{
+public:
+    void func(){cout<<"父类函数"<<endl;}
+};
+class Son:public Base{};
+int main(){
+    Son s;
+    s.func();
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 26:
+            box.innerHTML = `
+            <h2>7.5 多态与虚函数virtual</h2>
+            <p>多态：同一个接口，不同对象执行不同实现，C++OOP核心。virtual实现晚绑定。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code26')">复制代码</button>
+<pre id="code26">#include &lt;iostream&gt;
+using namespace std;
+class Animal{
+public:
+    virtual void speak(){}
+};
+class Dog:public Animal{
+public:
+    void speak(){cout<<"汪汪"<<endl;}
+};
+int main(){
+    Animal *a = new Dog();
+    a->speak();
+    delete a;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 27:
+            box.innerHTML = `
+            <h2>8.1 new与delete动态内存</h2>
+            <p>在堆区手动申请内存，用完必须delete释放。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code27')">复制代码</button>
+<pre id="code27">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    int *p = new int(100);
+    cout << *p;
+    delete p;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 28:
+            box.innerHTML = `
+            <h2>8.2 内存泄漏问题</h2>
+            <p>使用new申请堆内存，忘记delete释放，程序运行期间内存不会回收，造成泄漏。</p>
+            <p>排查原则：new和delete必须成对出现。</p>
+            `;
+            break;
+        case 29:
+            box.innerHTML = `
+            <h2>9.1 文本文件读写 fstream</h2>
+            <p>读取/写入本地txt文本文件。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code29')">复制代码</button>
+<pre id="code29">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+using namespace std;
+int main(){
+    ofstream f("test.txt");
+    f << "写入文件内容";
+    f.close();
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 30:
+            box.innerHTML = `
+            <h2>9.2 二进制文件读写</h2>
+            <p>直接以二进制原始字节读写，适合图片、音视频、自定义结构体存储。</p>
+            `;
+            break;
+        case 31:
+            box.innerHTML = `
+            <h2>10.1 函数模板 template</h2>
+            <p>模板：一套通用代码，适配多种数据类型，不用重复写多个重载函数。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code31')">复制代码</button>
+<pre id="code31">#include &lt;iostream&gt;
+using namespace std;
+template&lt;typename T&gt;
+T add(T a,T b){
+    return a+b;
+}
+int main(){
+    cout << add(1,2) << endl;
+    cout << add(1.1,2.2) << endl;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 32:
+            box.innerHTML = `
+            <h2>10.2 类模板</h2>
+            <p>模板类，让类可以支持任意数据类型，STL底层全部依靠类模板实现。</p>
+            `;
+            break;
+        case 33:
+            box.innerHTML = `
+            <h2>10.3 try-catch异常捕获</h2>
+            <p>捕获程序运行错误，防止程序直接崩溃退出。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code33')">复制代码</button>
+<pre id="code33">#include &lt;iostream&gt;
+using namespace std;
+int main(){
+    try{
+        int a=0;
+        if(a==0) throw "除零错误";
+    }catch(const char* err){
+        cout << err;
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 34:
+            box.innerHTML = `
+            <h2>11.1 STL简介与迭代器</h2>
+            <p>STL标准模板库，大量现成容器与算法。迭代器相当于容器内的“指针”遍历元素。</p>
+            `;
+            break;
+        case 35:
+            box.innerHTML = `
+            <h2>11.2 vector动态数组</h2>
+            <p>STL最常用容器，动态扩容，自动管理内存。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code35')">复制代码</button>
+<pre id="code35">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+int main(){
+    vector<int> vec;
+    vec.push_back(11);
+    vec.push_back(22);
+    vec.push_back(33);
+    for(int v:vec){
+        cout << v << " ";
+    }
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 36:
+            box.innerHTML = `
+            <h2>11.3 string进阶</h2>
+            <p>string的find查找、substr截取、erase删除、replace替换。</p>
+            `;
+            break;
+        case 37:
+            box.innerHTML = `
+            <h2>11.4 deque双端队列</h2>
+            <p>支持头部、尾部快速插入删除，适合队列任务场景。</p>
+            `;
+            break;
+        case 38:
+            box.innerHTML = `
+            <h2>11.5 set集合容器</h2>
+            <p>元素自动去重、自动排序，底层红黑树。</p>
+            `;
+            break;
+        case 39:
+            box.innerHTML = `
+            <h2>11.6 map键值对映射</h2>
+            <p>key-value键值对，key唯一，自动排序，类似字典。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code39')">复制代码</button>
+<pre id="code39">#include &lt;iostream&gt;
+#include &lt;map&gt;
+using namespace std;
+int main(){
+    map&lt;string,int&gt; m;
+    m["小明"] = 18;
+    cout << m["小明"];
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 40:
+            box.innerHTML = `
+            <h2>11.7 STL常用算法 sort/find</h2>
+            <p>algorithm头文件，sort排序，find查找，不用自己手写排序算法。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code40')">复制代码</button>
+<pre id="code40">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+int main(){
+    vector<int> v={5,3,8,1};
+    sort(v.begin(),v.end());
+    for(auto i:v) cout<<i;
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+        case 41:
+            box.innerHTML = `
+            <h2>12.1 命名空间namespace</h2>
+            <p>防止命名冲突，把变量、类封装在独立空间。std就是标准命名空间。</p>
+            `;
+            break;
+        case 42:
+            box.innerHTML = `
+            <h2>12.2 const常量与const指针</h2>
+            <p>const修饰变量不可修改；const指针，限制指针指向的值不可修改。</p>
+            `;
+            break;
+        case 43:
+            box.innerHTML = `
+            <h2>12.3 函数默认参数</h2>
+            <p>定义函数时给参数预设默认值，调用时不传参自动使用默认值。</p>
+            <div class="code-block">
+<button class="copy-btn" onclick="copyCode('code43')">复制代码</button>
+<pre id="code43">#include &lt;iostream&gt;
+using namespace std;
+void func(int a,int b=10){
+    cout << a + b;
+}
+int main(){
+    func(5); //b自动使用默认10
+    return 0;
+}</pre>
+            </div>
+            `;
+            break;
+    }
+}
+</script>
+</body>
+</html>
